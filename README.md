@@ -1,7 +1,7 @@
 # SeNSe
 
 SeNSe: embedding alignment via semantic anchors selection
-For details and citations see [References'section](##References)
+For details and citations see [References'section](#References)
 
 Use Python 3.8.10
 
@@ -13,8 +13,8 @@ Use Python 3.8.10
 4. Run CREATE_DICT_MOST_SIMILAR.py
 5. Run ALIGNMENT.py
 
-## **Refences**
-'''
+## Refences
+```
 @article{malandri2024sense,
   title={SeNSe: embedding alignment via semantic anchors selection},
   author={Malandri, Lorenzo and Mercorio, Fabio and Mezzanzanica, Mario and Pallucchini, Filippo},
@@ -22,4 +22,4 @@ Use Python 3.8.10
   year={2024},
   publisher={Springer}
 }
-'''
+```
