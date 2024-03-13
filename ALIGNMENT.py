@@ -26,18 +26,17 @@ lang_src = input('insert the source language: ')
 lang_trg = input('insert the target language: ')
 embedding_src = input('insert the filename of source embedding: ')
 embedding_trg = input('insert the filename of target embedding: ')
-#limit_similarity = 0.9
-#limit_similarity = float(input('insert the maximum limit of similarity for dispersion part: '))
+
 dictionary_label_in = lang_src + '_' + lang_trg
 dictionary_label_in_rev = lang_trg + '_' + lang_src
-#dictionary_label_out = lang_src + '_' + lang_trg + '_' + str(limit_similarity)
+
 retrieval = input('insert retrieval type: ')
 evaluation_precision = input('evaluation_precision @: ')
 input_translation_dict_src_trg = root + 'data/translation_dictionary_' + dictionary_label_in +'.pkl'
 input_translation_dict_trg_src = root + 'data/translation_dictionary_' + dictionary_label_in_rev +'.pkl'
 input_dict_evaluation = root + 'input/' + dictionary_label_in + '.test.txt'
 
-#per velocizzare
+
 input_most_similar_dict_src = root + 'data/most_similar_dictionary_' + lang_src + '.pkl' 
 input_most_similar_dict_trg = root + 'data/most_similar_dictionary_' + lang_trg + '.pkl' 
 
@@ -82,8 +81,6 @@ dict_translation_trg_src = pickle.load(file_to_read_dict_trg_src)
 dict_most_frequent_common = {}
 vocab_src = model_src_origin.vocab
 vocab_trg = model_trg_origin.vocab
-#vocab_src = model_src_origin.key_to_index
-#vocab_trg = model_trg_origin.key_to_index
 
 #create dictionary of common words among corpora (translating src in trg language)
 for i in tqdm(vocab_src):
@@ -107,7 +104,7 @@ open_file.close()
 file_to_read_common_words = open(output_dict_common_words, "rb")
 dict_common_words = pickle.load(file_to_read_common_words)
 
-#per velocizzare import dictionaries of similar words
+#import dictionaries of similar words
 file_to_read_dict = open(input_most_similar_dict_src, "rb")
 dict_most_similar_src = pickle.load(file_to_read_dict)
 
@@ -342,17 +339,10 @@ print('start anchors selection for different parameters: ')
 
 list_output = []
 df_output = pd.DataFrame()
-#value of similarity to consider for dispersion?
-#limit_similarity = median
-#list_limit_similarity = [0.6232532262802124, 0.6367987394332886]
-#list_limit_similarity = [0.6]
-#number of most similar words to consider?
-#top_similar = 40
 #list_top_similar = [5, 10, 15, 20, 25, 30, 35, 40, 45]
 list_top_similar = [35]
 #possible maximum value of NDCG allowed for best anchors selection
 #list_tollerance_limit = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08 ,0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3]
-#list_tollerance_limit = [0.0, 0.03, 0.05, 0.08, 0.1, 0.13, 0.15, 0.18, 0.2, 0.23, 0.25, 0.28, 0.3]
 list_tollerance_limit = [0.13]
 for top_similar in list_top_similar:
     for tollerance_limit in list_tollerance_limit:  
@@ -362,17 +352,11 @@ for top_similar in list_top_similar:
         count_it = 0
         count_uk = 0
 
-        #model_src = copy.deepcopy(model_src_origin)
-        #model_trg = copy.deepcopy(model_trg_origin)
         model_src = KeyedVectors.load(temp_embedding_src)
         model_trg = KeyedVectors.load(temp_embedding_trg)
 
-        #file_exists_0 = os.path.exists(output_dict_anchors)
         print('start anchors selection')
         start_time = time.time()
-        #select most similar words for each couple of common words and traslate the source one in target language 
-        #if file_exists_0 == False:
-        #select most similar words for each src anchor and translate them
         dict_anchors, dict_anchors_scores = create_init_couple_w_ndcg(dict_common_words, dict_translation_src_trg, dict_translation_trg_src, dict_most_similar_src, dict_most_similar_trg, model_trg, model_src)
 
         print('Starting lenght of Seed Lexicon:', len(dict_anchors.keys()))
@@ -401,7 +385,6 @@ for top_similar in list_top_similar:
 
         df_anchors_score_sort_dedup = df_anchors_score_sort.drop_duplicates(subset=['column_1'], keep='first')
         df_anchors_score_sort_dedup = df_anchors_score_sort_dedup.drop_duplicates(subset=['column_2'], keep='first')
-        #select just top anchors
         data = df_anchors_score_sort_dedup['column_3']
 
         #Normalize DCG
@@ -451,9 +434,7 @@ for top_similar in list_top_similar:
 
         mean = statistics.mean(list_most_similar_values_clean)
         sd = statistics.stdev(list_most_similar_values_clean)
-        #median = statistics.median(list_most_similar_values_clean)
-        #limit_similarity = mean
-        
+
         file_temp_dict_anchors = root + data_folder + '/temp_dict_anchors_' + dictionary_label_in + '_' + str(top_similar) + '_' +str(tollerance_limit) + '.pkl'
         open_file = open(file_temp_dict_anchors, "wb")
         pickle.dump(dict_anchors, open_file)
@@ -464,13 +445,11 @@ for top_similar in list_top_similar:
         pickle.dump(dict_anchors_score_sort, open_file)
         open_file.close()
 
-        #list_limit_similarity = [mean, mean-sd, mean-(2*sd), mean+sd, mean+(2*sd)]
         list_limit_similarity = [mean]
         for limit_similarity in list_limit_similarity:
 
             print(f'we are going to use the sequent limit similarity: {limit_similarity}')
             output_dict_anchors = root + data_folder + '/dict_anchors_' + str(limit_similarity) + '_' + dictionary_label_in + '_' + str(top_similar) + '_' +str(tollerance_limit) + '.pkl'
-            #output_df_anchors = output_folder + '/anchors_' + dictionary_label_in + '_' + str(top_similar) + '_' +str(tollerance_limit) + '.csv'
 
             #import dict_anchors until now
             file_to_read_temp_dict_anchors = open(file_temp_dict_anchors, "rb")
@@ -491,7 +470,6 @@ for top_similar in list_top_similar:
                     continue
                 
                 #in order to decrease the computation time we check for each trg word if there are most similar words with similarity higher than the pre fixed limit
-                #list_scores = model_trg.most_similar(key[1], topn=100)
                 list_scores_all = dict_most_similar_trg[key[1]]
                 list_scores = []
                 for index, i in enumerate(list_scores_all):
@@ -520,8 +498,6 @@ for top_similar in list_top_similar:
 
             dict_items = dict_anchors.items()
             list_items = list(dict_items)
-            #df_anchors_new = pd.DataFrame(list_items)
-            #df_anchors_new.to_csv(output_df_anchors)
 
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -530,17 +506,12 @@ for top_similar in list_top_similar:
             print('Perform alignment using the semantic Seed Lexicon')
             input_dict_anchors = root + data_folder + '/dict_anchors_' + str(limit_similarity) + '_' + dictionary_label_in + '_' + str(top_similar) + '_' +str(tollerance_limit) + '.pkl'
             path_model_prjected = root + output_folder + '/' + lang_src + '.emb_projected_' + str(limit_similarity) + '_' + str(top_similar) + '_' + str(tollerance_limit) + '.txt'
-            path_model_not_prjected = root + output_folder + '/' + lang_trg + '.emb_not_projected.txt'
-            #path_model_prjected = output_folder + '/' + lang_trg + '.emb_projected_' + str(limit_similarity) + '_' + str(top_similar) + '_' + str(tollerance_limit) + '.txt'
-            #path_model_not_prjected = output_folder + '/' + lang_src + '.emb_not_projected.txt'
-            
+            path_model_not_prjected = root + output_folder + '/' + lang_trg + '.emb_not_projected.txt'          
 
             model_src = KeyedVectors.load(temp_embedding_src)
             model_trg = KeyedVectors.load(temp_embedding_trg)
             src_words = model_src.vocab
             trg_words = model_trg.vocab
-            #src_words = model_src.key_to_index
-            #trg_words = model_trg.key_to_index
 
             # Build word to index map
             src_word2ind = {word: i for i, word in enumerate(src_words)}
@@ -581,18 +552,14 @@ for top_similar in list_top_similar:
             model_trg_for_alignment = gensim.models.keyedvectors.Word2VecKeyedVectors.load_word2vec_format(path_trg_emb_for_alignment, binary=False,unicode_errors='ignore')
 
             ortho = smart_procrustes_align_gensim(model_trg_for_alignment, model_src_for_alignment, words=None)
-            #ortho = smart_procrustes_align_gensim(model_src_for_alignment, model_trg_for_alignment, words=None)
 
             model_src = KeyedVectors.load(temp_embedding_src)
             model_trg = KeyedVectors.load(temp_embedding_trg)
             #fine check
             model_projected_complete = model_src
             model_not_projected_complete = model_trg
-            #model_projected_complete = model_trg
-            #model_not_projected_complete = model_src
-
+            
             #project src embedding in trg space
-            #model_projected_complete = copy.deepcopy(model_projected_complete_copy)
             model_projected_complete.init_sims()
             model_projected_complete.wv.syn0norm = model_projected_complete.wv.syn0 = (model_projected_complete.wv.syn0norm).dot(ortho)
 
@@ -629,7 +596,9 @@ for top_similar in list_top_similar:
             out.close()
             end_time = time.time()
             elapsed_time = end_time - start_time
-            print('total time for 3 part of alignment (projection) = ' + str('%.3f'%(elapsed_time)) + " sec \n")
+            print('total time for 3 part of alignment (projection) = ' + str('%.3f'%(elapsed_time)) + " sec \n")          
+            
+'''          
             #Embedding Alignemnt EVALUATION
             #This part is taken from gitHub: 
             print('start evaluation')
@@ -811,3 +780,4 @@ df_output['tot anchors'] = list_4_column
 df_output['accuracy'] = list_5_column
 
 df_output.to_csv(final_output)
+'''

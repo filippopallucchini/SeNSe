@@ -28,8 +28,6 @@ model_trg = gensim.models.keyedvectors.Word2VecKeyedVectors.load_word2vec_format
 
 vocab_src = model_src.vocab
 vocab_trg = model_trg.vocab
-#vocab_src = model_src.key_to_index
-#vocab_trg = model_trg.key_to_index
 
 dict_src = {}
 dict_trg = {}

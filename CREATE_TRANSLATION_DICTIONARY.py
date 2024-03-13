@@ -12,14 +12,12 @@ import gensim
 import operator
 import time
 import pickle
-#from gensim.models.wrappers import FastText
 import string
 from googletrans import Translator
 from tqdm import tqdm
 import time
 from re import search
 
-#ft_model = FastText.load_fasttext_format('data_v2/ft_vectors_cbow_100_100_0.1_security.bin')
 #input
 #lang_src = 'en'
 root = input('insert root with data: ')
@@ -29,9 +27,6 @@ lang_trg = input('insert the target language: ')
 embedding_src = input('insert the filename of source embedding: ')
 embedding_trg = input('insert the filename of target embedding: ')
 dictionary_label = lang_src + '_' + lang_trg
-
-#file_italian_embedding = 'input/it.emb.txt' 
-#file_english_embedding = 'input/en.emb.txt'
 
 output_translation_dict = root + 'data/translation_dictionary_'+ dictionary_label + '.pkl'
 
@@ -104,7 +99,7 @@ for page_number in tqdm(range(1, 10000)):
         with open(f'{root}data/{page_number}_file_translated.txt', "w", encoding="ascii", errors='ignore') as output:
             output.write(str(translation))
 
-#creo dizionario
+#creat dictionary
 list_src_words = []
 list_trg_words = []
 for page_number in tqdm(range(1,10000)):
