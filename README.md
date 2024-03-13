@@ -13,7 +13,7 @@ Use Python 3.8.10
 4. Run CREATE_DICT_MOST_SIMILAR.py
 5. Run ALIGNMENT.py
 
-## Refences
+## References
 ```
 @article{malandri2024sense,
   title={SeNSe: embedding alignment via semantic anchors selection},
